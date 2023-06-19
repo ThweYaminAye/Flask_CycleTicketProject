@@ -1,0 +1,173 @@
+{% extends 'layout/layout.html' %}
+{% block content %}
+        <div class="row">
+            <div class="col-10 offset-1">
+              <div class="row mb-5">
+                <div class="col-10 offset-1 text-center">
+                  <h1>Admin Dashboard</h1>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-10 offset-1">
+                  <div class="d-flex d-inline m-auto">
+                    {% if confirm_winner %}
+                    <i class="fa fa-trophy fa-2x" aria-hidden="true"></i><h5 style="color:green">Winner Ticket No :{{winnerticket}}</h5>
+                    {% else %}
+                    <i class="fa fa-trophy fa-2x" aria-hidden="true"></i><a href={{url_for('choose_winner')}}><h5>Choose Ticket Winner</h5></a>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              {% if order_pending %}
+              <h3 class="text-center mt-5 mb-3">Pending Orders</h3>
+              <table class="table"  style="background-color: rgb(182, 211, 253);">
+                <thead>
+                  <tr>
+                    <th scope="col">Order_Id</th>
+                    <th scope="col">Username</th>
+                    <th scope="col">Tickets</th>
+                    <th scope="col">Payment</th>
+                    <th scope="col">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {%for order in order_pending%}
+                  <tr>
+                    <th scope="row">{{order.id}}</th>
+                    <td>{{order.user_name}}</td>
+                    <td>{{order.tickets}}</td>
+                    <td>
+                      <div class="p-2" >
+                        {% if order.image  and order.payment_info %}
+                          <pre>Transation Id - {{order.payment_info['Transaction Id']}}</pre>
+                          <pre>Date - {{order.payment_info['Date']}}</pre>
+                          <pre>Transfer To - {{order.payment_info['Name']}}</pre>
+                          <pre>Phone - {{order.payment_info['Phone']}}</pre>
+                          <pre>Amount - {{order.payment_info['Amount']}}</pre>
+                      {% else %}
+                        -
+                      {% endif %}
+                      </div>
+                    </td>
+                    <td>
+                        <div class="btn-sm"><button class="border-0 p-1 mx-1"><a class="text-decoration-none " href={{url_for('admin_accept', orderid = order.id)}} style="color:green">Accept</a></button>
+                        <button class=" border-0 p-1 mx-1" ><a class="text-decoration-none" href={{url_for('admin_reject', orderid = order.id)}} style="color:red">Reject</a></button></div>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+              {% endif %}
+              
+              {% if order_tickets %}
+              <h3 class="text-center mt-5 mb-3">Customer Orders</h3>
+                <table class="table" style="background-color: rgb(182, 211, 253);">
+                    <thead>
+                      <tr >
+                        <th scope="col">Order_Id</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Tickets</th>
+                        <th scope="col">Payment</th>
+                        <th scope="col">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {%for order in order_tickets%}
+                      <tr>
+                        <th scope="row">{{order.id}}</th>
+                        <td >{{order.user_name}}</td>
+                        <td>{{order.tickets}}</td>
+                        <td>
+                            <div class="p-1" >
+                              {% if order.image  and order.payment_info %}
+                                <pre>Transation Id - {{order.payment_info['Transaction Id']}}</pre>
+                                <pre>Date - {{order.payment_info['Date']}}</pre>
+                                <pre>Transfer To - {{order.payment_info['Name']}}</pre>
+                                <pre>Phone - {{order.payment_info['Phone']}}</pre>
+                                <pre>Amount - {{order.payment_info['Amount']}}</pre>
+                                <!-- Button trigger modal -->
+                                <div class="row">
+                                  <div class="col-12">
+                                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                      View
+                                    </button>
+                                  </div>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                      <div class="modal-dialog">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Payment Image</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                          </div>
+                                          <div class="modal-body text-center">
+                                            <img src="data:image/jpeg;base64,{{order.image}}" alt="Image" style="width: 400px; height:600px">
+                                          </div>
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                              -
+                            {% endif %}
+                        </td>
+                        {% if order.verify == "Accepted" %}
+                          <td style="color:green">
+                            {{order.verify}}</td>
+                      {% elif order.verify == 'Rejected' %}
+                        <td style="color:red">
+                          {{order.verify}}</td>
+                        </tr>
+                      {% endif %}
+                    {% endfor %}
+                    
+                    </tbody>
+                  </table>
+                {% endif %}
+                {% if confirm_winner %}
+                <h3 class="text-center mt-5 mb-3">Winner Information</h3>
+                <table class="table"  style="background-color: rgb(182, 211, 253);">
+                  <thead>
+                    <tr>
+                      <th scope="col">Order_Id</th>
+                      <th scope="col">Username</th>
+                      <th scope="col">Tickets</th>
+                      <th scope="col">Payment</th>
+                      <th scope="col">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {%for order in winner_info %}
+                    <tr>
+                      <th scope="row">{{order.id}}</th>
+                      <td>{{order.user_name}}</td>
+                      <td>{{order.tickets}}</td>
+                      <td>
+                        <div class="p-2" >
+                          {% if order.image  and order.payment_info %}
+                            <pre>Transation Id - {{order.payment_info['Transaction Id']}}</pre>
+                            <pre>Date - {{order.payment_info['Date']}}</pre>
+                            <pre>Transfer To - {{order.payment_info['Name']}}</pre>
+                            <pre>Phone - {{order.payment_info['Phone']}}</pre>
+                            <pre>Amount - {{order.payment_info['Amount']}}</pre>
+                        {% else %}
+                          -
+                        {% endif %}
+                        </div>
+                      </td>
+                      <td>
+                          <button class="border-0 p-1 "><a class="text-decoration-none " href={{url_for('releaseticket')}} orderid = order.id)}} style="color:green">Release Winner</a></button>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+                {% endif %}
+                
+            </div>
+        </div> 
+{% endblock %}
